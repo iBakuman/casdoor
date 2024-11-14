@@ -1,0 +1,44 @@
+services:
+  casdoor:
+    image: ibakuman/go-debugger:${GO_VERSION}
+    container_name: casdoor-debug
+    restart: always
+    ports:
+      - "8000:8000"
+      - "${CASDOOR_DEBUG_PORT}:40000"
+    depends_on:
+      - db
+    working_dir: ${CASDOOR_SRC_DIR}
+    environment:
+      RUNNING_IN_DOCKER: "true"
+      SRC_DIR: ${CASDOOR_SRC_DIR}
+    volumes:
+      - type: bind
+        source: ${CASDOOR_SRC_DIR}
+        target: ${CASDOOR_SRC_DIR}
+        read_only: false
+      - type: volume
+        source: casdoor-dev-cache
+        target: /root/.cache
+      - type: volume
+        source: casdoor-mod-cache
+        target: /go/pkg/mod
+    command: --createDatabase=true
+  db:
+    container_name: casdoor-mysql
+    restart: always
+    image: mysql:8.0.25
+    platform: linux/amd64
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    volumes:
+      - type: volume
+        source: casdoor-mysql
+        target: /var/lib/mysql
+
+volumes:
+    casdoor-dev-cache:
+    casdoor-mod-cache:
+    casdoor-mysql:

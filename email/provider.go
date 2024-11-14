@@ -14,11 +14,11 @@
 
 package email
 
-type EmailProvider interface {
+type Provider interface {
 	Send(fromAddress string, fromName, toAddress string, subject string, content string) error
 }
 
-func GetEmailProvider(typ string, clientId string, clientSecret string, host string, port int, disableSsl bool, endpoint string, method string) EmailProvider {
+func GetEmailProvider(typ string, clientId string, clientSecret string, host string, port int, disableSsl bool, endpoint string, method string) Provider {
 	if typ == "Azure ACS" {
 		return NewAzureACSEmailProvider(clientSecret, host)
 	} else if typ == "Custom HTTP Email" {
